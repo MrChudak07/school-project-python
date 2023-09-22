@@ -419,7 +419,7 @@ if __name__ == "__main__":
 
 
     # TODO -------------------------------------------------
-    file = QtCore.QFile("school_project/school_style.css")                             
+    file = QtCore.QFile("./school_style.css")                             
     file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
     stream = QtCore.QTextStream(file)
     app.setStyleSheet(stream.readAll())
