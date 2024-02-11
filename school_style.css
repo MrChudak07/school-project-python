@@ -1,116 +1,314 @@
-
-/* aaaaaaaaa */
-QWidget#widget {
-    background-color:#212227;
-
-
-}
-
-QWidget#widget_2{
-    
-    background-color: #3C056C;
-}
-
-QWidget#widget_3{
-    background-color: #11097B;
+/* ! Распределить по зонам!!!! */
+/* * main */
+QWidget#main {
+    background-color:#1B1D20;
     
 }
 
-QWidget#widget_4{
-    background-color: #11097B;
-
+/* * Hint(верхняя плашка) */
+QWidget#window_hint{
+    
+    background-color: #101214;
+    
 }
-
-QWidget#widget_5{
-    background-color: #11097B;
-}
-
-QWidget#widget_6{
-    background-color: #11497B
-}
-
-
 QPushButton#push_exit{
-    background-color: #3C056C;
-    color: #FFFFFF;
+    background-color:#101214;
+    color: #DEDEDE;
     border:none;
-
+    
 }
 QPushButton#push_exit:hover{
     background-color: #A10602;
-    color: #FFFFFF;
+    color: #DEDEDE;
     border: none
 }
 
 
 QPushButton#push_hider{
-    background-color: #3C056C;
-    color: #FFFFFF;
+    background-color: #101214;
+    color: #DEDEDE;
     border: none;
 }
 QPushButton#push_hider:hover{
-    background-color: #270347;
-    color: #FFFFFF;
+    background-color: #000000; /* 3C056C */
+    color: #DEDEDE;
     border: none;
-
+    
 }
 
 QPushButton#menu_show{
-    background-color: #655EBD;
-    color: #FFFFFF;
-
-}
-QPushButton#menu_show:hover{
-    background-color: #3F3B75;
-    color: #FFFFFF;
-    line-height: 0px;
-
+    background-color:#101214;
+    color: #929292;
+    font-size: 18px;
+    border: None
+    
 }
 
-QPushButton#menu_hide{
-    background-color: #655EBD;
-    color: #FFFFFF;
+QWidget#menu{
+    background-color: #101214;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #000000;
+    border-left: None;
+    
+
+    border-bottom-right-radius: 4px;
+    /* z-index: 3; */
+}
+QPushButton#buttons_menu{
+    background-color: #101214;
+    color: #929292;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: normal;
+    border: None;
+    text-align: left;;
+
+}
+QPushButton#buttons_menu:hover{
+    color:#DEDEDE;
 }
 
-QPushButton#hide_menu:hover{
-    background-color: #3F3B75;
-    color: #FFFFFF;
-    line-height: 0px;
 
+
+
+
+
+
+
+
+/* *Контейнер notes и search */
+QWidget#tools{
+    background-color: #1B1D20;
+    
 }
 
+
+
+
+/* * Список заметок + кнопка добавления и лейбл */
+QWidget#notes{
+    
+    background-color: #1B1D20;
+    padding-left: 12px;
+    
+    /* z-index: 2; */
+}
 QPushButton#add_note{
-    background-color:  #ADDDDD;
-    color: #3F3B75;
-   
+    background-color:  #004643;
+    color: #DEDEDE;
+    border-radius: 4px;
     font-size: 24px;
+    
 }
 
-QPushButton#add_note:hover{
-    background-color: #3F3B75;
-    color: #FFFFFF;
+QLabel#note_lb{
+    background-color: #1B1D20; 
+    color: #929292;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 18.75px;
+    
+}
+/* QPushButton#add_note:hover{
+    background-color: #12dcfe;
+    color: #DEDEDE;
     font-size: 24px;
+} */
+
+QPushButton#note{
+    background-color: #1B1D20;
+    color: #DEDEDE;
+    font-size: 16px;
+    text-align: left;
+    border: None;
+    padding: 6px;
+    border-radius: 4px;
+}
+
+QPushButton#note:hover{
+    background-color:  #24282C;
+    
+    
+}
+
+QPushButton#choiced_note{
+    background-color: #004643;
+    color: #DEDEDE;
+    font-size: 16px;
+    text-align:left;
+    border: None;
+    border-radius: 4px;
+    padding: 6px;
+}
+QMenu#context_menu{
+    background-color: #101214;
+    /* border-style: solid;
+    border-width: 1px;
+    border-color: #000000;
+    border-left: None; */
+    color: #929292;
+
+    border-bottom-right-radius: 4px;
+}
+
+QAction#buttons_action{
+    /* background-color: #101214; */
+    color: #929292;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: normal;
+    border: None;
+    text-align: left;;
+}
+QAction#buttons_action:hover{
+    background-color:#DEDEDE;
+    color:#DEDEDE;
+
 }
 
 
 
 
+/* *Зона поиска */
+QWidget#search{ 
+    background-color: #1B1D20;
+} 
+QLineEdit#search_line{
+    background-color: #1B1D20;
+    font-size: 14px;    
+    color: #929292;
+    border-style: solid;
+    border-width: 2px;
+    border-top-style: None;
+    border-left-style: None;
+    border-right-style: None;;
+    border-color: #004643;
+}
+
+
+
+/* *Зона имени заметки */
+QWidget#name_zone{
+    background-color: #202224;
+    /* z-index: 1; */
+    border-style: solid;
+    border-width: 2px;
+    border-top-style: None;
+    border-left-style: None;
+    border-right-style: None;;
+    border-color: #1B1D20;
+}
+/* *Кнопка высвечивания результата */
+QPushButton#result{
+    background-color: #101214;
+    font-size: 18px;
+    color: #929292;
+    text-align: center;
+    border-style: solid;
+    border-radius: 4px;;
+}
+
+
+/* *Имя выбранной заметки */
 QLabel#choice_name{
     color: #FFFFFF;
-    font-size: 18px;
-
-}
-
-
-QLineEdit#search_line{
-    background-color: #655EBD;
-    font-size: 18px;    
+    color:#929292;
+    font-size: 24px;
+    
 }
 
 
 
+
+
+/* * Рабочая зона */
 QTextEdit#work_area{
-    background-color: #ADDDDD;
-    font-size: 16px;
-
+    background-color: #202224;
+    font-size: 18px;
+    color: #C2C2C2;
+    border: None;
+    padding-top: 16px;
+    padding-left: 16px;
+    padding-bottom: 60px;
+    
 }
+
+
+
+
+
+
+
+/* *Зона кнопок */
+QWidget#buttons{
+    background-color: #1B1D20;
+    
+}
+QColorDialog#color_dialog{
+    background-color: #ffffff;
+    
+}
+QPushButton#button_color{
+    background-color:#004643;
+    color: #D9D9D9;
+    font-size: 28px;
+}
+
+
+/* QPushButton#menu_show:hover{
+    background-color: #0a264d;
+    color: #DEDEDE;
+    line-height: 0px;
+} */
+
+
+
+/* QPushButton#menu_hide{
+    background-color: #655EBD;
+    color: #FFFFFF;
+} */
+
+/* QPushButton#hide_menu:hover{
+    background-color: #3F3B75;
+    color: #DEDEDE;
+    line-height: 0px;
+    
+} */
+
+
+
+
+
+
+
+
+
+
+
+
+/* QScrollBar{
+    background-color: #0080ff;
+    width: 15px;
+    border: None;
+    margin: 0px 0px 0px 0px;
+    min-height: 0px;  
+} */
+QScrollBar::handle:vertical {
+    background-color: #000000;
+    min-height: 30px;
+    border-radius: 7px;
+}
+
+QScrollBar:vertical {
+    /* border: none; */
+    background: #202224;
+    width: 14px;
+    /* margin: 15px 0 15px 0; */
+    /* border-radius: 0px; */
+}
+/* QScrollBar::groove {
+    background-color: #f000ff;
+    border-radius: 5px;
+} */
+
