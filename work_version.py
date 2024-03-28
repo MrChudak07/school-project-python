@@ -4,6 +4,7 @@ from PyQt5.QtGui import QContextMenuEvent
 import sys
 import os
 import markdown
+import matplotlib
 
 
 
@@ -24,8 +25,12 @@ import markdown
 
 
 
+
 # ! переменные 
 # * Database
+config = {"codehilite": {"linenums": "True"},
+    # "mdx_math": {"enable_dollar_delimiter": True},
+                    }
 # Список заметок
 l_notes = []
 gpu_notes = []
@@ -314,6 +319,12 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         # Присвоение имени объекта
         self.work_area.setObjectName('work_area')
         self.work_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+
+        self.viewer = QtWidgets.QTextEdit(self.content_area, readOnly = True)
+        # self.viewer = QtWidgets.QLabel()
+        self.viewer.setGeometry(x_work_area, y_work_area, width_work_area, height_work_area)
+        self.viewer.setObjectName('work_area')
+        self.viewer.hide()
         # self.work_area.verticalScrollBar()
         # self.scrol = QtWidgets.QScrollBar(self.content_area)
         # self.scrol.setGeometry(QtCore.QRect(1178, 200, 20, 400))
@@ -465,7 +476,37 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         self.context_close = self.context_menu.addAction('закрыть')
         self.context_close.setObjectName('buttons_action')
         self.context_close.triggered.connect(self.action_close_click)
-        
+
+        # * Окно смены имеи заметки
+        self.rename_win = QtWidgets.QWidget(note_win)
+        self.rename_win.setGeometry(QtCore.QRect(650, 250, 500, 200))
+        self.rename_win.setObjectName('rename_win')
+        self.rename_win.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.rename_win.hide()
+
+
+        self.rename_line = QtWidgets.QLineEdit(self.rename_win)
+        self.rename_line.setGeometry(QtCore.QRect(80, 100, 360, 35))
+        self.rename_line.setObjectName('rename_line')
+        self.rename_line.setPlaceholderText('Имя заметки')
+
+
+        self.rename_label = QtWidgets.QLabel(self.rename_win) 
+        self.rename_label.setGeometry(QtCore.QRect(175, 20, 200, 50))  
+        self.rename_label.setText('Переименовать заметку?') 
+        self.rename_label.setObjectName('rename_label')
+
+
+        self.rename_cancel = QtWidgets.QPushButton(self.rename_win)
+        self.rename_cancel.setGeometry(QtCore.QRect(20, 160, 100, 25))
+        self.rename_cancel.setText('Отменить')
+        self.rename_cancel.setObjectName('rename_cancel')
+
+
+        self.rename_accept = QtWidgets.QPushButton(self.rename_win)  
+        self.rename_accept.setGeometry(QtCore.QRect(380, 160, 100, 25)) 
+        self.rename_accept.setText('Потвердить') 
+        self.rename_accept.setObjectName('rename_accept')
 
 
 
@@ -516,12 +557,8 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
 
    
             
-        
+     
 
-
-
-
-# ! пока не разобрался
 class Widget(QtWidgets.QWidget, Ui_programm):
     def __init__(self, parent=None):
         super(Widget, self).__init__(parent)
@@ -591,12 +628,44 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                     break
     
     def action_rename_click(self):
+        # self.rename_win = QtWidgets.QWidget()
+        # self.rename_win.setGeometry(QtCore.QRect(710,440, 500, 200))
+        # self.rename_win.setObjectName('rename_win')
+        # self.rename_win.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        # self.rename_line = QtWidgets.QLineEdit()
+        old_name = self.pressed.text()
+        self.rename_line.setPlaceholderText(old_name)
+        self.rename_win.show()
         pass
+
+
+    def accept_rename(self):
+        new_name = self.rename_line.text()
+        print(new_name)
+        old_name = self.pressed.text()
+        print(old_name)
+        for but in l_notes:
+            if but.text() == old_name:
+                
+                but.setText(new_name)
+                self.choice_name.setText(new_name)
+        
+        os.rename(f'./prog_notes/{old_name}', f'./prog_notes/{new_name}' )
+        os.rename(f'./prog_notes/{new_name}/{old_name}.txt', f'./prog_notes/{new_name}/{new_name}.txt' )
+        os.rename(f'./prog_notes/{new_name}/others/{old_name}.html', f'./prog_notes/{new_name}/others/{new_name}.html' )
+
+        self.rename_win.close()
+        
+
+
+    def cancel_rename(self):
+        self.rename_win.close()
 
 
         # ! -------------------------------------------------------------------------
     def action_save_click(self):
         # TODO определить от какой заметки было вызванно модальное окно и собственно переделать сохранение и удаление из оперативки
+        flag = False
         if not self.choice_name.text():
             return None
         for dict in gpu_notes:
@@ -607,6 +676,18 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                 gpu_notes.remove(dict)
                 with open(f'./prog_notes/{self.choice_name.text()}/{self.choice_name.text()}.txt', 'w', encoding='utf-8') as f:
                     f.write(text)
+                flag = True
+                
+            
+        if not flag:
+            text = self.work_area.toPlainText()
+            with open(f'./prog_notes/{self.choice_name.text()}/{self.choice_name.text()}.txt', 'w', encoding='utf-8') as f:
+                f.write(text)
+                    
+
+        with open(f'./prog_notes/{self.choice_name.text()}/others/{self.choice_name.text()}.html', 'w', encoding='utf-8') as f_html:
+            text_html = markdown.markdown(text,  extension = ["codehilite"], extension_configs=config)
+            f_html.write(text_html)
             # else:
             #     with open(f'./prog_notes/{self.choice_name.text()}/{self.choice_name.text()}.txt', 'w', encoding='utf-8') as f:
             #         text = self.work_area.toPlainText()
@@ -697,17 +778,17 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                 self.pressed.setObjectName('choiced_note')
                 self.choice_name.setText(self.pressed.text())
             else: 
-                dict_note = {'name': self.pressed.text(), 'text':self.work_area.toPlainText()}
-                for d in gpu_notes:
-                    if d['name'] == dict_note['name']:
-                        d['text'] = dict_note['text'] 
-                        update = True
-                        break
-                    else:
-                        update = False
-                        print(d['name'], dict_note['name'], 'Добавление!!!!!')
-                if not update:
-                    gpu_notes.append(dict_note)
+                # dict_note = {'name': self.pressed.text(), 'text':self.work_area.toPlainText()}
+                # for d in gpu_notes:
+                #     if d['name'] == dict_note['name']:
+                #         d['text'] = dict_note['text'] 
+                #         update = True
+                #         break
+                #     else:
+                #         update = False
+                #         print(d['name'], dict_note['name'], 'Добавление!!!!!')
+                # if not update:
+                #     gpu_notes.append(dict_note)
                 self.pressed.setObjectName('note')
                 self.pressed = QtWidgets.QApplication.instance().sender()
                 for i in gpu_notes:
@@ -720,7 +801,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                 if check != None:
                     self.choice_name.setText(note['name'])
                     self.work_area.setText(note['text'])
-                    print(note)
+                    # print(note)
                 else:
                     with open(f'./prog_notes/{self.pressed.text()}/{self.pressed.text()}.txt', 'r', encoding='utf-8') as f:
                         text = f.read()
@@ -729,7 +810,11 @@ class Widget(QtWidgets.QWidget, Ui_programm):
 
                 self.pressed.setObjectName('choiced_note')
             self.css_update()
-            print(gpu_notes)
+            print('CLIIIIIIIIIIIIIIIIIIIICKKFKFKKF')
+            self.init_conffg_signals()
+            print(len(gpu_notes))
+            return None
+            # print(gpu_notes)
             
 
             
@@ -824,16 +909,94 @@ class Widget(QtWidgets.QWidget, Ui_programm):
             _ = open(f'./prog_notes/{l_notes[-1].text()}/others/{l_notes[-1].text()}.html', 'w')
             # file.write('check_'+'-1')
 
+    def show_result(self):
+        tag = False
+        # with open(f'./prog_notes/{programm.choice_name.text()}/others/{programm.choice_name.text()}.html', 'r', encoding='utf-8') as f:
+        #     for line in f:
+        #         if "<style>" in line:
+        #             tag = True
+        #             break
+        #     if not tag:    
+        #         with open(f'./prog_notes/{programm.choice_name.text()}/others/{programm.choice_name.text()}.html', 'a', encoding='utf-8') as f:
+        #             f.write("\n<style>\n@import url('./styles/base-styles.css');\n@import url('./styles/styles-gruvbox-dark.css');\n</style>")
 
+
+        if len(programm.choice_name.text().replace(' ','')) == 0:
+            return None
+        flag = False
+        if programm.button_result.text() == 'смотреть html':
+            for note in gpu_notes:
+                if programm.choice_name.text() == note['name']:
+                    # TODO из оперативки в смотреть заметку и потом отображать 
+                    text = note['text']
+                    
+                    flag = True
+                    programm.button_result.setText('редактировать')
+                    programm.work_area.hide()
+                    programm.viewer.show()
+                    
+                    text = markdown.markdown(text, extension = ["codehilite"], extension_configs=config)
+                    text = """<style>
+@import url('./styles/base-styles.css');
+@import url('./styles/styles-gruvbox-dark.css');
+</style>""" + text
+                    programm.viewer.setText(text)
+                    # print(programm.viewer.toPlainText())
+                    break
+            
+            if flag:
+                return None
+            else:
+                programm.button_result.setText('редактировать')
+                programm.work_area.hide()
+                programm.viewer.show()
+                with open(f'./prog_notes/{programm.choice_name.text()}/others/{programm.choice_name.text()}.html', 'r', encoding='utf-8') as f:
+                    text = f.read()
+                text = """<style>
+@import url('./styles/base-styles.css');
+@import url('./styles/styles-gruvbox-dark.css');
+</style>""" + text
+                programm.viewer.setText(text)
+
+        else:
+            programm.button_result.setText('смотреть html')
+            programm.work_area.show()
+            programm.viewer.hide()
+            # with open(f'./prog_notes/{programm.choice_name.text()}/{programm.choice_name.text()}.txt', 'r', encoding='utf-8') as f:
+            #     text = f.read()
+            
+            # programm.viewer.setText(text)
+
+
+
+    def gpu_update(self):
+        text = programm.work_area.toPlainText()
+        name = programm.choice_name.text()
+        for note in range(len(gpu_notes)):
+            print('----------------------')
+            print(name, gpu_notes[note]['name'])
+            if name == gpu_notes[note]['name']:
+                gpu_notes[note]['text'] = text
+                print(gpu_notes)
+                return None
+            
+        dict = {'name': name, 'text': text}
+        
+        print('CLICK') # ? Почему х4???????????????????
+        gpu_notes.append(dict)
+        print(gpu_notes)
+        
+
+    def init_conffg_signals(self):
+        programm.work_area.textChanged.connect(programm.gpu_update)
 
 
         
 
 
 
-
-
 if __name__ == "__main__":
+
     import sys
     app = QtWidgets.QApplication(sys.argv)
     programm = Widget()
@@ -846,6 +1009,9 @@ if __name__ == "__main__":
     # programm.menu_hide.clicked.connect(programm.hide_menu)
     programm.add_note.clicked.connect(programm.note_add)
     # programm.button_color.clicked.connect(programm.void_color)
+    programm.button_result.clicked.connect(programm.show_result)
+    programm.rename_accept.clicked.connect(programm.accept_rename)
+    programm.rename_cancel.clicked.connect(programm.cancel_rename)
     
     
     programm.css_update()

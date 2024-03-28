@@ -1,0 +1,19 @@
+html {
+    color: #C2C2C2;
+    background-color: #202224;
+}
+
+h1 {
+    /* этот стиль можно удалить */
+    color: #13B4AD;
+}
+
+/* script {
+    display: block;
+} */
+.linenodiv pre {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+
+}

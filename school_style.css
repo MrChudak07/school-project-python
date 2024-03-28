@@ -1,8 +1,20 @@
 /* ! Распределить по зонам!!!! */
+/* @font-face {
+
+    font-family: 'Roboto';
+    
+    src: url(‘./fonts/Roboto-Regular.ttf’) format('truetype');
+     
+    } */
+
 /* * main */
 QWidget#main {
     background-color:#1B1D20;
     
+}
+
+QWidget#rename_win{
+    background-color:#737373;
 }
 
 /* * Hint(верхняя плашка) */
@@ -143,14 +155,13 @@ QPushButton#choiced_note{
 }
 QMenu#context_menu{
     background-color: #101214;
-    /* border-style: solid;
-    border-width: 1px;
-    border-color: #000000;
-    border-left: None; */
+    
     color: #929292;
 
     border-bottom-right-radius: 4px;
 }
+
+
 
 QAction#buttons_action{
     /* background-color: #101214; */
@@ -206,7 +217,13 @@ QPushButton#result{
     color: #929292;
     text-align: center;
     border-style: solid;
-    border-radius: 4px;;
+    border-radius: 4px;
+    font-family: 'Roboto', sans-serif;
+}
+
+QPushButton#result:hover{
+    background-color: #004643;
+    color: #C2C2C2;
 }
 
 
@@ -232,6 +249,15 @@ QTextEdit#work_area{
     padding-left: 16px;
     padding-bottom: 60px;
     
+}
+QLabel#viewer{
+    background-color: #202224;
+    font-size: 18px;
+    color: #C2C2C2;
+    border: None;
+    padding-top: 16px;
+    padding-left: 16px;
+    padding-bottom: 60px;
 }
 
 
