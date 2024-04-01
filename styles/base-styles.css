@@ -1,19 +1,50 @@
+@font-face {
+    font-family: "monospace";
+    src: url("../fonts/MonospaceRegular.woff2") format("woff2");
+    font-weight: 400;
+    
+    
+
+    
+}
+
+@font-face {
+    font-family: "roboto";
+    src: url("../fonts/Roboto-Regular.woff2") format("woff2");
+    font-weight: 400;
+    
+
+}
+
+
+
 html {
     color: #C2C2C2;
     background-color: #202224;
 }
 
-h1 {
-    /* этот стиль можно удалить */
-    color: #13B4AD;
+
+code{
+    font-family: "monospace", sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+}
+p { 
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
+    font-size: 18px;
 }
 
-/* script {
-    display: block;
-} */
+
 .linenodiv pre {
     display: flex;
     flex-direction: column;
     gap: 0px;
 
 }
+
+.linenodiv span {
+    font-family: "monospace", sans-serif;
+    font-weight: 400;
+}
+

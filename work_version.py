@@ -1,6 +1,8 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 from PyQt5.QtCore import QPoint, QSize
 from PyQt5.QtGui import QContextMenuEvent
+
+
 import sys
 import os
 import markdown
@@ -27,10 +29,14 @@ import matplotlib
 
 
 # ! переменные 
+# * CSS styles
+config = {"codehilite": {"linenums": "True"}}
+style = '<style>'
+with open('./styles/base-styles.css', 'r',  encoding= 'utf-8') as f:
+    style+= f.read()
+with open('./styles/color-theme.css', 'r', encoding='utf-8') as f:
+    style += f.read() + '</style>'
 # * Database
-config = {"codehilite": {"linenums": "True"},
-    # "mdx_math": {"enable_dollar_delimiter": True},
-                    }
 # Список заметок
 l_notes = []
 gpu_notes = []
@@ -320,7 +326,7 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         self.work_area.setObjectName('work_area')
         self.work_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
 
-        self.viewer = QtWidgets.QTextEdit(self.content_area, readOnly = True)
+        self.viewer = QtWebEngineWidgets.QWebEngineView(self.content_area)
         # self.viewer = QtWidgets.QLabel()
         self.viewer.setGeometry(x_work_area, y_work_area, width_work_area, height_work_area)
         self.viewer.setObjectName('work_area')
@@ -686,7 +692,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                     
 
         with open(f'./prog_notes/{self.choice_name.text()}/others/{self.choice_name.text()}.html', 'w', encoding='utf-8') as f_html:
-            text_html = markdown.markdown(text,  extension = ["codehilite"], extension_configs=config)
+            text_html = markdown.markdown(text,   extensions=["codehilite"], extension_configs=config)
             f_html.write(text_html)
             # else:
             #     with open(f'./prog_notes/{self.choice_name.text()}/{self.choice_name.text()}.txt', 'w', encoding='utf-8') as f:
@@ -898,6 +904,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
             # print('file added')
 
         else: 
+            
             os.mkdir('./prog_notes')
             os.mkdir(f'./prog_notes/{l_notes[-1].text()}')
             os.mkdir(f'./prog_notes/{l_notes[-1].text()}/others')
@@ -907,6 +914,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
             
             _ = open(f'./prog_notes/{l_notes[-1].text()}/{l_notes[-1].text()}.txt', 'w')
             _ = open(f'./prog_notes/{l_notes[-1].text()}/others/{l_notes[-1].text()}.html', 'w')
+
             # file.write('check_'+'-1')
 
     def show_result(self):
@@ -935,12 +943,9 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                     programm.work_area.hide()
                     programm.viewer.show()
                     
-                    text = markdown.markdown(text, extension = ["codehilite"], extension_configs=config)
-                    text = """<style>
-@import url('./styles/base-styles.css');
-@import url('./styles/styles-gruvbox-dark.css');
-</style>""" + text
-                    programm.viewer.setText(text)
+                    text = markdown.markdown(text,  extensions=["codehilite"], extension_configs=config)
+                    text += style 
+                    programm.viewer.setHtml(text)
                     # print(programm.viewer.toPlainText())
                     break
             
@@ -952,11 +957,8 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                 programm.viewer.show()
                 with open(f'./prog_notes/{programm.choice_name.text()}/others/{programm.choice_name.text()}.html', 'r', encoding='utf-8') as f:
                     text = f.read()
-                text = """<style>
-@import url('./styles/base-styles.css');
-@import url('./styles/styles-gruvbox-dark.css');
-</style>""" + text
-                programm.viewer.setText(text)
+                text += style 
+                programm.viewer.setHtml(text)
 
         else:
             programm.button_result.setText('смотреть html')
