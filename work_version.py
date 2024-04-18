@@ -1,10 +1,15 @@
-from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
+# from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
+from PyQt5.QtCore import QRect, Qt, QFile, QTextStream
+from PyQt5.QtGui import QIcon, QCursor
+from PyQt5.QtWidgets import QWidget, QTextEdit, QLineEdit, QLabel, QAction, QMenu, QPushButton, QApplication
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QPoint, QSize
 from PyQt5.QtGui import QContextMenuEvent
 
 
 import sys
 import os
+import shutil
 import markdown
 import matplotlib
 
@@ -26,11 +31,9 @@ import matplotlib
 
 
 
-
-
 # ! переменные 
 # * CSS styles
-config = {"codehilite": {"linenums": "True"}}
+config = {"codehilite": {"linenums": "True"}, 'mdx_math': {'enable_dollar_delimiter': True}}
 style = '<style>'
 with open('./styles/base-styles.css', 'r',  encoding= 'utf-8') as f:
     style+= f.read()
@@ -39,7 +42,7 @@ with open('./styles/color-theme.css', 'r', encoding='utf-8') as f:
 # * Database
 # Список заметок
 l_notes = []
-gpu_notes = []
+gpu_notes = {}
 
 # * Main
 # Размеры
@@ -122,7 +125,7 @@ y_note_area = 130
 # размеры
 width_widget_menu = 207
 height_widget_menu = 124
-# print(width_widget_menu, height_widget_menu)
+
 # координаты
 x_widget_menu = 0
 y_widget_menu = 32
@@ -248,6 +251,44 @@ height_button_color = 32
 x_button_color = 12
 y_button_color = 12
 
+# * Диалоговое окно
+# size 
+width_rename_win = 500
+height_rename_win = 200
+# locate
+x_rename_win = 650
+y_rename_win = 250
+
+# * Кнопака потверждения переименования
+# size 
+width_rename_accept = 100
+height_rename_accept = 25
+# locate
+x_rename_accept = 380
+y_rename_accept = 160
+#* Кнопка отмены переименования
+# size
+width_rename_cancel = 100
+height_rename_cancel = 25
+# locatee
+x_rename_cancel = 20
+y_rename_cancel = 160
+
+# * Строка ввода нового имени
+# size 80, 100, 360, 35
+width_rename_line = 360
+height_rename_line = 35
+# Locate
+x_rename_line = 80
+y_rename_line = 100
+
+# * Надпись об переименвоании заметки
+# size 
+width_rename_label = 488
+height_rename_label = 50
+# locate
+x_rename_label = 20
+y_rename_label = 20
 
 
 
@@ -259,14 +300,14 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         note_win.resize(WIDTH, HEIGHT)
 
         # * Добавление иконки для программы
-        icon = QtGui.QIcon()
+        icon = QIcon()
         
         # продолжить добавление чуть позже
 
         # Создание рабочего окна
-        self.main = QtWidgets.QWidget(note_win)
+        self.main = QWidget(note_win)
         # Настройка размеров рабочего окна
-        self.main.setGeometry(QtCore.QRect(x_win, y_win, WIDTH, HEIGHT))
+        self.main.setGeometry(QRect(x_win, y_win, WIDTH, HEIGHT))
         # Настройка вида рабочего окна
         # Присвоение имени для окна
         self.main.setObjectName('main')
@@ -274,59 +315,59 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         
         # * Создание верхней панели
         # Объявление верхней панели
-        self.hint = QtWidgets.QWidget(self.main)
+        self.hint = QWidget(self.main)
         
         # Настройка размеров верхней панели
-        self.hint.setGeometry(QtCore.QRect(x_hint, y_hint, width_hint, height_hint))
+        self.hint.setGeometry(QRect(x_hint, y_hint, width_hint, height_hint))
 
         # Присвоения имени для верхней панели
         self.hint.setObjectName('window_hint')
 
         # ! --------------------------------------------------------------------
-        self.content_area = QtWidgets.QWidget(self.main)
-        self.content_area.setGeometry(QtCore.QRect(x_content_area, y_content_area, width_content_area, height_content_area))
+        self.content_area = QWidget(self.main)
+        self.content_area.setGeometry(QRect(x_content_area, y_content_area, width_content_area, height_content_area))
         self.content_area.setObjectName('content')
 
-        self.tools = QtWidgets.QWidget(self.content_area)
-        self.tools.setGeometry(QtCore.QRect(x_tools, y_tools, width_tools, height_tools))
+        self.tools = QWidget(self.content_area)
+        self.tools.setGeometry(QRect(x_tools, y_tools, width_tools, height_tools))
         self.tools.setObjectName('tools')
         self.tools.lower()
 
-        self.buttons = QtWidgets.QWidget(self.content_area)
-        self.buttons.setGeometry(QtCore.QRect(x_buttons_area, y_buttons_area, width_buttons_area, height_buttons_area))
+        self.buttons = QWidget(self.content_area)
+        self.buttons.setGeometry(QRect(x_buttons_area, y_buttons_area, width_buttons_area, height_buttons_area))
         self.buttons.setObjectName('buttons')
 
-        self.name_zone = QtWidgets.QWidget(self.content_area)
-        self.name_zone.setGeometry(x_name_zone, y_name_zone, width_name_zone, height_name_zone )
+        self.name_zone = QWidget(self.content_area)
+        self.name_zone.setGeometry(QRect(x_name_zone, y_name_zone, width_name_zone, height_name_zone) )
         self.name_zone.setObjectName('name_zone')
 
-        self.search = QtWidgets.QWidget(self.tools)
-        self.search.setGeometry(QtCore.QRect(x_search_area, y_search_area, width_search_area, height_search_area))
+        self.search = QWidget(self.tools)
+        self.search.setGeometry(QRect(x_search_area, y_search_area, width_search_area, height_search_area))
         self.search.setObjectName('search')
 
-        self.notes_area = QtWidgets.QWidget(self.tools)
-        self.notes_area.setGeometry(QtCore.QRect(x_note_area, y_note_area, width_note_area, height_note_area))
+        self.notes_area = QWidget(self.tools)
+        self.notes_area.setGeometry(QRect(x_note_area, y_note_area, width_note_area, height_note_area))
         self.notes_area.setObjectName('notes')
        
 
-        self.menu = QtWidgets.QWidget(self.main)
-        self.menu.setGeometry(QtCore.QRect(x_widget_menu, y_widget_menu, width_widget_menu, height_widget_menu))
+        self.menu = QWidget(self.main)
+        self.menu.setGeometry(QRect(x_widget_menu, y_widget_menu, width_widget_menu, height_widget_menu))
         self.menu.setObjectName('menu')
         self.menu.raise_()
         self.menu.hide()
-        print(x_widget_menu, y_widget_menu, width_widget_menu, height_widget_menu)
+       
         
         # ! ---------------------------------------------------------------------------
-        self.work_area = QtWidgets.QTextEdit(self.content_area)
+        self.work_area = QTextEdit(self.content_area)
         
         # Настройка размеров
         self.work_area.setGeometry(x_work_area, y_work_area,width_work_area, height_work_area)
 
         # Присвоение имени объекта
         self.work_area.setObjectName('work_area')
-        self.work_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.work_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
-        self.viewer = QtWebEngineWidgets.QWebEngineView(self.content_area)
+        self.viewer = QWebEngineView(self.content_area)
         # self.viewer = QtWidgets.QLabel()
         self.viewer.setGeometry(x_work_area, y_work_area, width_work_area, height_work_area)
         self.viewer.setObjectName('work_area')
@@ -340,19 +381,19 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         # * tools components
         # * Строка поиска
         # Создание строки 
-        self.search_line = QtWidgets.QLineEdit(self.search)
-        self.search_line.setGeometry(QtCore.QRect(x_search_line, y_search_line,width_search_line, height_search_line))
+        self.search_line = QLineEdit(self.search)
+        self.search_line.setGeometry(QRect(x_search_line, y_search_line,width_search_line, height_search_line))
         self.search_line.setPlaceholderText('поиск файла по имени')
         self.search_line.setObjectName('search_line')
         # * Кнопка открытия меню
         # Создание кнопки
-        self.menu_show = QtWidgets.QPushButton(self.hint)
+        self.menu_show = QPushButton(self.hint)
 
         # Настройка размеров кнопки
-        self.menu_show.setGeometry(QtCore.QRect(x_menu_show, y_menu_show, width_menu_show, height_menu_show))
+        self.menu_show.setGeometry(QRect(x_menu_show, y_menu_show, width_menu_show, height_menu_show))
 
         # Настройка текста кнопки
-        self.menu_show.setIcon(QtGui.QIcon('./images/menu_icon.svg'))
+        self.menu_show.setIcon(QIcon('./images/menu_icon.svg'))
         self.menu_show.setIconSize(QSize(24, 24))
 
         # Присвоение имени объекта
@@ -361,20 +402,20 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         # * Component of notes area
         # * Создание кнопки добавления заметки
         # объявление
-        self.add_note = QtWidgets.QPushButton(self.tools)
+        self.add_note = QPushButton(self.tools)
 
         # настройка размеров и местоположения
-        self.add_note.setGeometry(QtCore.QRect(x_add_note, y_add_note, width_add_note, height_add_note))
+        self.add_note.setGeometry(QRect(x_add_note, y_add_note, width_add_note, height_add_note))
 
         # Настройка текста
-        self.add_note.setIcon(QtGui.QIcon('./images/add_icon.svg'))
+        self.add_note.setIcon(QIcon('./images/add_icon.svg'))
         self.add_note.setIconSize(QSize(24, 24))
 
         # присвоение имени объекта
         self.add_note.setObjectName('add_note')
 
-        self.note_lb = QtWidgets.QLabel(self.tools)
-        self.note_lb.setGeometry(QtCore.QRect(x_note_lb, y_note_lb, width_note_lb, height_note_lb))
+        self.note_lb = QLabel(self.tools)
+        self.note_lb.setGeometry(QRect(x_note_lb, y_note_lb, width_note_lb, height_note_lb))
         self.note_lb.setText('создать заметку')
         self.note_lb.setObjectName('note_lb')
         
@@ -382,13 +423,13 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
 
         # * Крестик
         # Создание кнопки выхода (крестика)
-        self.push_exit = QtWidgets.QPushButton(self.hint)
+        self.push_exit = QPushButton(self.hint)
 
         # Настройка размеров и расположения крестика
-        self.push_exit.setGeometry(QtCore.QRect(x_push_exti, y_push_exit, width_push_exit, height_push_exit))
+        self.push_exit.setGeometry(QRect(x_push_exti, y_push_exit, width_push_exit, height_push_exit))
 
         # Вносим внутрь кнопки сам крестик
-        self.push_exit.setIcon(QtGui.QIcon('./images/close_icon.svg'))
+        self.push_exit.setIcon(QIcon('./images/close_icon.svg'))
         self.push_exit.setIconSize(QSize(24, 24))
 
         # Присвоение имени объекта 
@@ -397,13 +438,13 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
 
         # * Сворачивание экрана
         # Создание кнопки сворачивания экрана
-        self.push_hider = QtWidgets.QPushButton(self.hint)
+        self.push_hider = QPushButton(self.hint)
 
         # Настройка размеров и расположения кнопки сворачивания
-        self.push_hider.setGeometry(QtCore.QRect(x_push_hider, y_push_hider, width_push_hider, height_push_hider))
+        self.push_hider.setGeometry(QRect(x_push_hider, y_push_hider, width_push_hider, height_push_hider))
 
         # Вносим внутрь кнопки полоску
-        self.push_hider.setIcon(QtGui.QIcon('./images/hide_icon.svg'))
+        self.push_hider.setIcon(QIcon('./images/hide_icon.svg'))
         self.push_hider.setIconSize(QSize(24, 24))
 
         # Присвоение имени объекта 
@@ -419,19 +460,19 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         
         # * Создание QLabel имени
         # объявление
-        self.choice_name = QtWidgets.QLabel(self.name_zone)
+        self.choice_name = QLabel(self.name_zone)
 
         # Настройка размеров и местоположения
-        self.choice_name.setGeometry(QtCore.QRect(x_choice_name, y_choice_name, width_choice_name, height_choice_name))
+        self.choice_name.setGeometry(QRect(x_choice_name, y_choice_name, width_choice_name, height_choice_name))
 
         # Присвоение имени объекта
         self.choice_name.setObjectName('choice_name')
 
 
         # * Кнопка просмотра
-        self.button_result = QtWidgets.QPushButton(self.name_zone)
+        self.button_result = QPushButton(self.name_zone)
         self.button_result.setText('смотреть html')
-        self.button_result.setGeometry(QtCore.QRect(x_button_result, y_button_result, width_button_result, height_button_result))
+        self.button_result.setGeometry(QRect(x_button_result, y_button_result, width_button_result, height_button_result))
         self.button_result.setObjectName('result')
 
         # Настройка текста
@@ -446,29 +487,29 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         
         # * Кнопки меню
 
-        self.open_file = QtWidgets.QPushButton(self.menu)
+        self.open_file = QPushButton(self.menu)
         self.open_file.setText('открыть файл')
         self.open_file.setObjectName('buttons_menu')
-        self.open_file.setGeometry(QtCore.QRect(x_open_file, y_open_file, width_open_file, height_open_file))
+        self.open_file.setGeometry(QRect(x_open_file, y_open_file, width_open_file, height_open_file))
 
-        self.save_project = QtWidgets.QPushButton(self.menu)
+        self.save_project = QPushButton(self.menu)
         self.save_project.setText('сохранить как проект')
         self.save_project.setObjectName('buttons_menu')
-        self.save_project.setGeometry(QtCore.QRect(x_save_project, y_save_project, width_save_project, height_save_project))
+        self.save_project.setGeometry(QRect(x_save_project, y_save_project, width_save_project, height_save_project))
 
-        self.change_theme = QtWidgets.QPushButton(self.menu)
+        self.change_theme = QPushButton(self.menu)
         self.change_theme.setText('сменить тему')
         self.change_theme.setObjectName('buttons_menu')
-        self.change_theme.setGeometry(QtCore.QRect(x_change_theme, y_change_theme, width_change_theme, height_change_theme))
+        self.change_theme.setGeometry(QRect(x_change_theme, y_change_theme, width_change_theme, height_change_theme))
 
-        self.help = QtWidgets.QPushButton(self.menu)
+        self.help = QPushButton(self.menu)
         self.help.setText('помощь')
         self.help.setObjectName('buttons_menu')
-        self.help.setGeometry(QtCore.QRect(x_help, y_help, width_help, height_help))
+        self.help.setGeometry(QRect(x_help, y_help, width_help, height_help))
 
 
         # * Контекстное меню
-        self.context_menu = QtWidgets.QMenu(self.main)
+        self.context_menu = QMenu(self.main)
         self.context_menu.setObjectName('context_menu')
         
         self.context_rename = self.context_menu.addAction('переименовать')
@@ -484,46 +525,49 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         self.context_close.triggered.connect(self.action_close_click)
 
         # * Окно смены имеи заметки
-        self.rename_win = QtWidgets.QWidget(note_win)
-        self.rename_win.setGeometry(QtCore.QRect(650, 250, 500, 200))
+        self.rename_win = QWidget(note_win)
+        self.rename_win.setGeometry(QRect(x_rename_win, y_rename_win, width_rename_win, height_rename_win))
         self.rename_win.setObjectName('rename_win')
-        self.rename_win.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.rename_win.setWindowFlags(Qt.FramelessWindowHint)
         self.rename_win.hide()
 
 
-        self.rename_line = QtWidgets.QLineEdit(self.rename_win)
-        self.rename_line.setGeometry(QtCore.QRect(80, 100, 360, 35))
+        self.rename_line = QLineEdit(self.rename_win)
+        self.rename_line.setGeometry(QRect(x_rename_line, y_rename_line, width_rename_line, height_rename_line))
         self.rename_line.setObjectName('rename_line')
-        self.rename_line.setPlaceholderText('Имя заметки')
+        
 
 
-        self.rename_label = QtWidgets.QLabel(self.rename_win) 
-        self.rename_label.setGeometry(QtCore.QRect(175, 20, 200, 50))  
-        self.rename_label.setText('Переименовать заметку?') 
+        self.rename_label = QLabel(self.rename_win) 
+        self.rename_label.setGeometry(QRect(x_rename_label, y_rename_label, width_rename_label, height_rename_label))  
+        self.rename_label.setText('Переименовать заметку') 
         self.rename_label.setObjectName('rename_label')
 
 
-        self.rename_cancel = QtWidgets.QPushButton(self.rename_win)
-        self.rename_cancel.setGeometry(QtCore.QRect(20, 160, 100, 25))
+        self.rename_cancel = QPushButton(self.rename_win)
+        self.rename_cancel.setGeometry(QRect(x_rename_cancel, y_rename_cancel, width_rename_cancel, height_rename_cancel))
         self.rename_cancel.setText('Отменить')
         self.rename_cancel.setObjectName('rename_cancel')
 
 
-        self.rename_accept = QtWidgets.QPushButton(self.rename_win)  
-        self.rename_accept.setGeometry(QtCore.QRect(380, 160, 100, 25)) 
+        self.rename_accept = QPushButton(self.rename_win)  
+        self.rename_accept.setGeometry(QRect(x_rename_accept, y_rename_accept, width_rename_accept, height_rename_accept)) 
         self.rename_accept.setText('Потвердить') 
         self.rename_accept.setObjectName('rename_accept')
 
+        self.background_rename = QWidget(self.main)
+        self.background_rename.setGeometry(QRect(x_win, y_win, WIDTH, HEIGHT))
+        self.background_rename.setStyleSheet("""background-color: rgba(0,0,0, 0.5);""")
+        self.background_rename.hide()
 
 
 
 
     def note_add(self):
         
-        self.note = QtWidgets.QPushButton(self.notes_area)
+        self.note = QPushButton(self.notes_area)
         self.note.setObjectName('note')
-        name = QtWidgets.QLineEdit(self.notes_area)
-        
+        name = QLineEdit(self.notes_area) 
         if len(l_notes) != 0:
             i = len(l_notes)
             l_notes.append(self.note)
@@ -537,7 +581,7 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
             l_notes[i].setText(f'Unnamed-{i}')
             # name.hide()
             l_notes[i].setGeometry(12, l_notes[i-1].y() + l_notes[i-1].geometry().height(),  302, 31)
-            print(l_notes[i].x(), l_notes[i].geometry().y())
+           
         else:
             l_notes.append(self.note)
             # name.setGeometry(12, 0, 302, 31)
@@ -554,7 +598,15 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         for i in l_notes:
             i.show()
             i.clicked.connect(programm.click_note)
+        name = l_notes[-1].text()
+        gpu_notes[name] = {}
+        text = ''
+        gpu_notes[name]['text'] = text
+        gpu_notes[name]['is_selected'] = False
+        gpu_notes[name]['is_changed'] = False
+       
         programm.save_newNote()
+        
         # self.add_note.raise_()
         
         # self.note = QtWidgets.QPushButton(self.notes_area)
@@ -565,23 +617,24 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
             
      
 
-class Widget(QtWidgets.QWidget, Ui_programm):
+class Widget(QWidget, Ui_programm):
     def __init__(self, parent=None):
         super(Widget, self).__init__(parent)
         self.setupUi(self)
         self.check_menu = False
 
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.click_count = 0
 
     def mousePressEvent(self, event):
         # Если нажата левая кнопка мыши
-        if event.button() == QtCore.Qt.LeftButton:
+        if event.button() == Qt.LeftButton:
             # получаем координаты окна относительно экрана
             x_main = programm.geometry().x()
             y_main = programm.geometry().y()
             # получаем координаты курсора относительно окна нашей программы
-            cursor_x = QtGui.QCursor.pos().x()
-            cursor_y = QtGui.QCursor.pos().y()
+            cursor_x = QCursor.pos().x()
+            cursor_y = QCursor.pos().y()
             # проверяем условием позицию курсора на нужной области программы(у нас это верхний бар) 
             # если всё ок - перемещаем
             # иначе игнорируем
@@ -603,7 +656,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                     programm.menu.hide()
 
 
-        elif event.button() == QtCore.Qt.RightButton:
+        elif event.button() == Qt.RightButton:
             self.old_pos = None
 
         
@@ -611,13 +664,13 @@ class Widget(QtWidgets.QWidget, Ui_programm):
 
     # вызывается при отпускании кнопки мыши
     def mouseReleaseEvent(self, event):
-        if event.button() == QtCore.Qt.LeftButton:
+        if event.button() == Qt.LeftButton:
             self.old_pos = None
 
     # вызывается всякий раз, когда мышь перемещается
     def mouseMoveEvent(self, event):
         
-        if  programm.geometry().y() <= QtGui.QCursor.pos().y() <= programm.geometry().y() + programm.hint.geometry().height():
+        if  programm.geometry().y() <= QCursor.pos().y() <= programm.geometry().y() + programm.hint.geometry().height():
             if not self.old_pos:
                 return
             delta = event.pos() - self.old_pos
@@ -639,47 +692,53 @@ class Widget(QtWidgets.QWidget, Ui_programm):
         # self.rename_win.setObjectName('rename_win')
         # self.rename_win.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         # self.rename_line = QtWidgets.QLineEdit()
-        old_name = self.pressed.text()
-        self.rename_line.setPlaceholderText(old_name)
+        
         self.rename_win.show()
-        pass
+        self.background_rename.show()
+        
 
 
     def accept_rename(self):
-        new_name = self.rename_line.text()
-        print(new_name)
-        old_name = self.pressed.text()
-        print(old_name)
-        for but in l_notes:
-            if but.text() == old_name:
-                
-                but.setText(new_name)
-                self.choice_name.setText(new_name)
-        
-        os.rename(f'./prog_notes/{old_name}', f'./prog_notes/{new_name}' )
-        os.rename(f'./prog_notes/{new_name}/{old_name}.txt', f'./prog_notes/{new_name}/{new_name}.txt' )
-        os.rename(f'./prog_notes/{new_name}/others/{old_name}.html', f'./prog_notes/{new_name}/others/{new_name}.html' )
+        if self.rename_line.text().replace(' ', '') != '':
+            new_name = self.rename_line.text()
+           
+            old_name = self.pressed.text()
 
-        self.rename_win.close()
+            for but in l_notes:
+                if but.text() == old_name:
+                    
+                    but.setText(new_name)
+                    self.choice_name.setText(new_name)
+            
+            os.rename(f'./prog_notes/{old_name}', f'./prog_notes/{new_name}' )
+            os.rename(f'./prog_notes/{new_name}/{old_name}.txt', f'./prog_notes/{new_name}/{new_name}.txt' )
+            os.rename(f'./prog_notes/{new_name}/others/{old_name}.html', f'./prog_notes/{new_name}/others/{new_name}.html' )
+
+            self.rename_win.close()
+            self.background_rename.close()
+        else: 
+            return None
         
 
 
     def cancel_rename(self):
         self.rename_win.close()
+        self.background_rename.close()
 
 
         # ! -------------------------------------------------------------------------
     def action_save_click(self):
-        # TODO определить от какой заметки было вызванно модальное окно и собственно переделать сохранение и удаление из оперативки
+        # TODO определить от какой заметки было вызванно модальное окно и собственно переделать сохранение 
         flag = False
         if not self.choice_name.text():
             return None
-        for dict in gpu_notes:
+        for note in gpu_notes:
                 
-            if self.choice_name.text() == dict['name']:
-                dict['text'] = self.work_area.toPlainText()
-                text = dict['text']
-                gpu_notes.remove(dict)
+            if self.choice_name.text() == note:
+                # note['text'] = self.work_area.toPlainText()
+                text = gpu_notes[note]['text']
+                gpu_notes[note]['is_changed'] = False
+                
                 with open(f'./prog_notes/{self.choice_name.text()}/{self.choice_name.text()}.txt', 'w', encoding='utf-8') as f:
                     f.write(text)
                 flag = True
@@ -692,20 +751,31 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                     
 
         with open(f'./prog_notes/{self.choice_name.text()}/others/{self.choice_name.text()}.html', 'w', encoding='utf-8') as f_html:
-            text_html = markdown.markdown(text,   extensions=["codehilite"], extension_configs=config)
+            text_html = markdown.markdown(text,   extensions=["codehilite", "tables", "mdx_math"], extension_configs=config)
             f_html.write(text_html)
             # else:
             #     with open(f'./prog_notes/{self.choice_name.text()}/{self.choice_name.text()}.txt', 'w', encoding='utf-8') as f:
             #         text = self.work_area.toPlainText()
             #         f.write(text)
-        print(gpu_notes)
+    
         
 
 # TODO ----------------------------------------------------------------------------------
 
     def action_close_click(self):
-        pass
-                
+        return None
+        name = self.choice_name.text()
+        self.choice_name.setText('')
+        self.work_area.setText('')
+        for note in gpu_notes:
+            if note == name:
+                gpu_notes.pop(name)
+                break
+        for but in l_notes:
+            if but.text() == name:
+                l_notes.remove(but)
+        shutil.rmtree(f'./prog_notes/{name}')
+        
 
 
     # Функция для закрытия приложения
@@ -763,7 +833,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                 
         #             dict_note = {'name': self.choice_name, 'text': text}
         #             gpu_notes.append(dict_note)
-        #             print('s')
+        #            
         #         # Переписываю новую
                 
         #         self.pressed = QtWidgets.QApplication.instance().sender()
@@ -772,74 +842,98 @@ class Widget(QtWidgets.QWidget, Ui_programm):
         #             self.work_area.setText(text)
         #     self.pressed.setObjectName('choiced_note')
         #     self.choice_name.setText(self.pressed.text())
+        #? ПЕРЕДЕЛАТЬ 
+        # ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            for i in gpu_notes:
+                if i == '':
+                    gpu_notes.pop(i)
             check = None
             update = False
         # * Логика: если ранее не было выбранно хаметки, то:
             # * получение выбранно заметки (pressed) -> обращение к файлу заметки -> запись текста файла в text -> отображение текста в work_area 
             if self.pressed == None:
-                self.pressed = QtWidgets.QApplication.instance().sender()
+          
+                self.pressed = QApplication.instance().sender()
+          
                 with open(f'./prog_notes/{self.pressed.text()}/{self.pressed.text()}.txt', 'r', encoding='utf-8') as f:
                     text = f.read()
-                    self.work_area.setText(text)
-                self.pressed.setObjectName('choiced_note')
                 self.choice_name.setText(self.pressed.text())
+                self.work_area.setText(text)
+
+                name = self.pressed.text()
+                gpu_notes[name] = {}
+                gpu_notes[name]['text'] = ''
+                gpu_notes[name]['is_changed'] = False
+                gpu_notes[name]['is_selected'] = True
+
+                self.pressed.setObjectName('choiced_note')
+             
             else: 
-                # dict_note = {'name': self.pressed.text(), 'text':self.work_area.toPlainText()}
-                # for d in gpu_notes:
-                #     if d['name'] == dict_note['name']:
-                #         d['text'] = dict_note['text'] 
-                #         update = True
-                #         break
-                #     else:
-                #         update = False
-                #         print(d['name'], dict_note['name'], 'Добавление!!!!!')
-                # if not update:
-                #     gpu_notes.append(dict_note)
+                # d = {'name': self.pressed.text(), 'text':self.work_area.toPlainText()}
+                for note in gpu_notes:
+                    if self.pressed.text() == note:
+                        gpu_notes[note]['text'] = self.work_area.toPlainText()
+                        update = True
+                        break
+                    else:
+                        update = False
+                    
+                if not update:
+                    name = self.pressed.text()
+                    gpu_notes[name] = {}
+                    gpu_notes[name]['text'] = self.work_area.toPlainText()
+                    gpu_notes[name]['is_selecred'] = False
                 self.pressed.setObjectName('note')
-                self.pressed = QtWidgets.QApplication.instance().sender()
-                for i in gpu_notes:
-                    if i['name'] == self.pressed.text():
+             
+                self.pressed = QApplication.instance().sender()
+               
+                for note in gpu_notes:
+                    if note == self.pressed.text():
                         check = True
-                        note = i
+                        name = note
                         break
 
                     #sadsad
                 if check != None:
-                    self.choice_name.setText(note['name'])
-                    self.work_area.setText(note['text'])
-                    # print(note)
+                    self.choice_name.setText(name)
+                    self.work_area.setText(gpu_notes[name]['text'])
+                    gpu_notes[name]['is_changed'] = False
+                
                 else:
                     with open(f'./prog_notes/{self.pressed.text()}/{self.pressed.text()}.txt', 'r', encoding='utf-8') as f:
                         text = f.read()
-                    self.work_area.setText(text)
                     self.choice_name.setText(self.pressed.text())
+                    self.work_area.setText(text)
+
+                    gpu_notes[self.choice_name.text()]['is_changed'] = False
 
                 self.pressed.setObjectName('choiced_note')
             self.css_update()
-            print('CLIIIIIIIIIIIIIIIIIIIICKKFKFKKF')
             self.init_conffg_signals()
-            print(len(gpu_notes))
+            self.click_count += 1
+         
             return None
-            # print(gpu_notes)
+         
+            
             
 
             
 
     def css_update(self):
         # TODO -------------------------------------------------
-        file = QtCore.QFile("./school_style.css")                             
-        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
-        stream = QtCore.QTextStream(file)
+        file = QFile("./school_style.css")                             
+        file.open(QFile.ReadOnly | QFile.Text)
+        stream = QTextStream(file)
         app.setStyleSheet(stream.readAll())
         # TODO -------------------------------------------------
     
     def notes_update(self):
         if os.path.exists('./prog_notes'):
-            print(os.listdir('./prog_notes'))
+           
             notes = os.listdir('./prog_notes')
             num_notes = len(os.listdir('./prog_notes'))
             for i in range(num_notes):
-                self.note = QtWidgets.QPushButton(self.notes_area)
+                self.note = QPushButton(self.notes_area)
                 self.note.setObjectName('note')
                 
                 if len(l_notes) != 0:
@@ -849,7 +943,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                     l_notes[i].setText(notes[i])
                     # name.hide()
                     l_notes[i].setGeometry(12, l_notes[i-1].y() + l_notes[i-1].geometry().height(),  302, 31)
-                    print(l_notes[i].x(), l_notes[i].geometry().y())
+             
                 else:
                     l_notes.append(self.note)
                    
@@ -857,10 +951,11 @@ class Widget(QtWidgets.QWidget, Ui_programm):
                   
                     l_notes[0].setText(notes[i])
 
-                for i in l_notes:
-                    i.show()
-                    i.clicked.connect(programm.click_note)
+            for i in l_notes:
+                i.show()
+                i.clicked.connect(programm.click_note)
 
+        # self.init_conffg_signals()
 
         # TODO: Тут должно быть прочтение всех папок из папки главной папки и добавление их в качестве кнопок для работы с их txt-шниками
         # * done
@@ -879,7 +974,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
         #     file.write('')
 
         #     # os.replace('C://vsCodeProjects/school_project/'+file.name, f'C://prog_notes/{l_notes[-1].text()}/{file.name}')
-        #     print('file added')
+
 
         # else: 
         #     os.mkdir('C://prog_notes')
@@ -887,7 +982,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
             
         #     file = open(f'C://prog_notes/{l_notes[-1].text()}/{l_notes[-1].text()}.txt', 'w')
         #     file.write('')
-            # print(file)
+       
             # os.replace(f'C://vsCodeProjects/school_project/'+file.name, f'C://prog_notes/{l_notes[-1].text()}/{file.name}')
 # ! ---------------------------
         if os.path.exists('./prog_notes'):
@@ -901,7 +996,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
             # file.write('check_0')
 
             # os.replace('C://vsCodeProjects/school_project/'+file.name, f'C://prog_notes/{l_notes[-1].text()}/{file.name}')
-            # print('file added')
+        
 
         else: 
             
@@ -934,19 +1029,19 @@ class Widget(QtWidgets.QWidget, Ui_programm):
         flag = False
         if programm.button_result.text() == 'смотреть html':
             for note in gpu_notes:
-                if programm.choice_name.text() == note['name']:
+                if programm.choice_name.text() == note:
                     # TODO из оперативки в смотреть заметку и потом отображать 
-                    text = note['text']
+                    text = gpu_notes[note]['text']
                     
                     flag = True
                     programm.button_result.setText('редактировать')
                     programm.work_area.hide()
-                    programm.viewer.show()
                     
-                    text = markdown.markdown(text,  extensions=["codehilite"], extension_configs=config)
+                    text = markdown.markdown(text,  extensions=["codehilite", "tables", 'mdx_math'], extension_configs=config)
                     text += style 
                     programm.viewer.setHtml(text)
-                    # print(programm.viewer.toPlainText())
+                    programm.viewer.show()
+           
                     break
             
             if flag:
@@ -954,11 +1049,11 @@ class Widget(QtWidgets.QWidget, Ui_programm):
             else:
                 programm.button_result.setText('редактировать')
                 programm.work_area.hide()
-                programm.viewer.show()
                 with open(f'./prog_notes/{programm.choice_name.text()}/others/{programm.choice_name.text()}.html', 'r', encoding='utf-8') as f:
                     text = f.read()
                 text += style 
                 programm.viewer.setHtml(text)
+                programm.viewer.show()
 
         else:
             programm.button_result.setText('смотреть html')
@@ -972,25 +1067,30 @@ class Widget(QtWidgets.QWidget, Ui_programm):
 
 
     def gpu_update(self):
+        # pass
         text = programm.work_area.toPlainText()
         name = programm.choice_name.text()
-        for note in range(len(gpu_notes)):
-            print('----------------------')
-            print(name, gpu_notes[note]['name'])
-            if name == gpu_notes[note]['name']:
+        for note in gpu_notes:
+       
+            if name == note:
                 gpu_notes[note]['text'] = text
-                print(gpu_notes)
+                gpu_notes[note]['is_changed'] = True
+       
                 return None
             
-        dict = {'name': name, 'text': text}
+        d = {'name': name, 'text': text}
+        gpu_notes[name] = {}
+        gpu_notes[name]['text'] = text
+        gpu_notes['is_selected'] = True
+        gpu_notes[name]['is_changed'] = True
         
-        print('CLICK') # ? Почему х4???????????????????
-        gpu_notes.append(dict)
-        print(gpu_notes)
-        
+     
+
 
     def init_conffg_signals(self):
         programm.work_area.textChanged.connect(programm.gpu_update)
+        
+        # pass
 
 
         
@@ -1000,7 +1100,7 @@ class Widget(QtWidgets.QWidget, Ui_programm):
 if __name__ == "__main__":
 
     import sys
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     programm = Widget()
 
 

@@ -1,3 +1,14 @@
+
+@font-face {
+    font-family: "roboto";
+    src: url("../fonts/Roboto-Regular.woff2") format("woff2");
+    font-weight: 400;
+    
+}
+
+
+
+
 /* ! Распределить по зонам!!!! */
 /* @font-face {
 
@@ -14,9 +25,51 @@ QWidget#main {
 }
 
 QWidget#rename_win{
-    background-color:#737373;
+    background-color:#202224;
 }
 
+QLabel#rename_label{
+    color: #DEDEDE;
+    font-size: 24px;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
+}
+
+QPushButton#rename_accept{
+    background-color:#202224;
+    color: #DEDEDE;
+    font-size: 16px;
+    border:none;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
+}
+
+QPushButton#rename_accept:hover{
+    background-color: #438C72;
+}
+
+QPushButton#rename_cancel{
+    background-color:#202224;
+    color: #DEDEDE;
+    font-size: 16px;
+    border:none;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
+}
+
+
+QPushButton#rename_cancel:hover{
+    background-color: #438C72;
+}
+QLineEdit#rename_line{
+    background-color:#1B1D20;
+    color: #DEDEDE;
+    font-size: 16px;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
+    border:none;
+
+}
 /* * Hint(верхняя плашка) */
 QWidget#window_hint{
     
@@ -27,12 +80,16 @@ QPushButton#push_exit{
     background-color:#101214;
     color: #DEDEDE;
     border:none;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
     
 }
 QPushButton#push_exit:hover{
     background-color: #A10602;
     color: #DEDEDE;
-    border: none
+    border: none;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
 }
 
 
@@ -74,7 +131,9 @@ QPushButton#buttons_menu{
     font-weight: 400;
     line-height: normal;
     border: None;
-    text-align: left;;
+    text-align: left;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
 
 }
 QPushButton#buttons_menu:hover{
@@ -120,6 +179,8 @@ QLabel#note_lb{
     font-size: 16px;
     font-weight: 400;
     line-height: 18.75px;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
     
 }
 /* QPushButton#add_note:hover{
@@ -136,6 +197,8 @@ QPushButton#note{
     border: None;
     padding: 6px;
     border-radius: 4px;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
 }
 
 QPushButton#note:hover{
@@ -152,6 +215,9 @@ QPushButton#choiced_note{
     border: None;
     border-radius: 4px;
     padding: 6px;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
+    /* pointer-events: none; */
 }
 QMenu#context_menu{
     background-color: #101214;
@@ -170,7 +236,9 @@ QAction#buttons_action{
     font-weight: 400;
     line-height: normal;
     border: None;
-    text-align: left;;
+    text-align: left;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
 }
 QAction#buttons_action:hover{
     background-color:#DEDEDE;
@@ -195,6 +263,8 @@ QLineEdit#search_line{
     border-left-style: None;
     border-right-style: None;;
     border-color: #004643;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
 }
 
 
@@ -218,7 +288,9 @@ QPushButton#result{
     text-align: center;
     border-style: solid;
     border-radius: 4px;
-    font-family: 'Roboto', sans-serif;
+
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
 }
 
 QPushButton#result:hover{
@@ -232,6 +304,8 @@ QLabel#choice_name{
     color: #FFFFFF;
     color:#929292;
     font-size: 24px;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
     
 }
 
@@ -248,6 +322,8 @@ QTextEdit#work_area{
     padding-top: 16px;
     padding-left: 16px;
     padding-bottom: 60px;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
     
 }
 QLabel#viewer{
@@ -258,6 +334,8 @@ QLabel#viewer{
     padding-top: 16px;
     padding-left: 16px;
     padding-bottom: 60px;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
 }
 
 

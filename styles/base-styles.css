@@ -27,14 +27,48 @@ html {
 code{
     font-family: "monospace", sans-serif;
     font-weight: 400;
-    font-size: 18px;
+    font-size: 22px;
 }
 p { 
     font-family: "roboto", sans-serif;
     font-weight: 400;
-    font-size: 18px;
+    font-size: 22px;
 }
 
+ul {
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+}
+
+ol {
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+}
+
+table {
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    
+    
+}
+
+/* tr { /* * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    border-width: 2px;
+    border-color:aqua;
+} */
+
+
+
+blockquote {
+    background-color: #33373A;
+    color: #D9D9D9;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: fit-content;
+}
 
 .linenodiv pre {
     display: flex;
