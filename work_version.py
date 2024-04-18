@@ -1,7 +1,7 @@
 # from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 from PyQt5.QtCore import QRect, Qt, QFile, QTextStream
 from PyQt5.QtGui import QIcon, QCursor
-from PyQt5.QtWidgets import QWidget, QTextEdit, QLineEdit, QLabel, QAction, QMenu, QPushButton, QApplication
+from PyQt5.QtWidgets import QWidget, QTextEdit, QLineEdit, QLabel, QAction, QMenu, QPushButton, QApplication, QSystemTrayIcon
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QPoint, QSize
 from PyQt5.QtGui import QContextMenuEvent
@@ -32,13 +32,7 @@ import matplotlib
 
 
 # ! переменные 
-# * CSS styles
-config = {"codehilite": {"linenums": "True"}, 'mdx_math': {'enable_dollar_delimiter': True}}
-style = '<style>'
-with open('./styles/base-styles.css', 'r',  encoding= 'utf-8') as f:
-    style+= f.read()
-with open('./styles/color-theme.css', 'r', encoding='utf-8') as f:
-    style += f.read() + '</style>'
+
 # * Database
 # Список заметок
 l_notes = []
@@ -291,10 +285,49 @@ x_rename_label = 20
 y_rename_label = 20
 
 
+if hasattr(sys, '_MEIPASS'):
+    add_iconPath = os.path.join(sys._MEIPASS, "./images/add_icon.svg")
+    close_iconPath = os.path.join(sys._MEIPASS, "./images/close_icon.svg")
+    hide_iconPath = os.path.join(sys._MEIPASS, "./images/hide_icon.svg")
+    menu_iconPath = os.path.join(sys._MEIPASS, "./images/menu_icon.svg")
+    mono_bold_path = os.path.join(sys._MEIPASS, './fonts/MonospaceBold.woff2')
+    mono_oblique_path = os.path.join(sys._MEIPASS, './fonts/MonospaceOblique.woff2')
+    mono_regular_path = os.path.join(sys._MEIPASS, './fonts/MonospaceRegular.woff2')
+    mono_roboto_path = os.path.join(sys._MEIPASS, './fonts/Roboto-Regular.woff2')
+    base_style = os.path.join(sys._MEIPASS, './styles/base-styles.css')
+    color_theme = os.path.join(sys._MEIPASS, './styles/color-theme.css')
+    school_style = os.path.join(sys._MEIPASS, './school_style.css')
+    
+else:
+    add_iconPath = os.path.join(os.path.abspath("."), "./images/add_icon.svg")
+    close_iconPath = os.path.join(os.path.abspath("."), "./images/close_icon.svg")
+    hide_iconPath = os.path.join(os.path.abspath("."), "./images/hide_icon.svg")
+    menu_iconPath = os.path.join(os.path.abspath("."), "./images/menu_icon.svg")
+    mono_bold_path = os.path.join(os.path.abspath("."), './fonts/MonospaceBold.woff2')
+    mono_oblique_path = os.path.join(os.path.abspath("."), './fonts/MonospaceOblique.woff2')
+    mono_regular_path = os.path.join(os.path.abspath("."), './fonts/MonospaceRegular.woff2')
+    mono_roboto_path = os.path.join(os.path.abspath("."), './fonts/Roboto-Regular.woff2')
+    base_style = os.path.join(os.path.abspath("."), './styles/base-styles.css')
+    color_theme = os.path.join(os.path.abspath("."), './styles/color-theme.css')
+    school_style = os.path.join(os.path.abspath("."), './school_style.css')
+
+# * CSS styles
+config = {"codehilite": {"linenums": "True"}, 'mdx_math': {'enable_dollar_delimiter': True}}
+style = '<style>'
+with open(base_style, 'r',  encoding= 'utf-8') as f:
+    style+= f.read()
+with open(color_theme, 'r', encoding='utf-8') as f:
+    style += f.read() + '</style>'
 
 class Ui_programm(object): # Может быть вариант с class Ui_programm()  
     # def __init__(self):
     def setupUi(self, note_win):
+
+        
+
+        # self.tray_icon = QSystemTrayIcon()
+        # self.tray_icon.setIcon(QIcon(iconPath))
+        
         self.pressed = None
         note_win.setObjectName('note_win')
         note_win.resize(WIDTH, HEIGHT)
@@ -393,7 +426,7 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         self.menu_show.setGeometry(QRect(x_menu_show, y_menu_show, width_menu_show, height_menu_show))
 
         # Настройка текста кнопки
-        self.menu_show.setIcon(QIcon('./images/menu_icon.svg'))
+        self.menu_show.setIcon(QIcon(menu_iconPath))
         self.menu_show.setIconSize(QSize(24, 24))
 
         # Присвоение имени объекта
@@ -408,7 +441,7 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         self.add_note.setGeometry(QRect(x_add_note, y_add_note, width_add_note, height_add_note))
 
         # Настройка текста
-        self.add_note.setIcon(QIcon('./images/add_icon.svg'))
+        self.add_note.setIcon(QIcon(add_iconPath))
         self.add_note.setIconSize(QSize(24, 24))
 
         # присвоение имени объекта
@@ -429,7 +462,7 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         self.push_exit.setGeometry(QRect(x_push_exti, y_push_exit, width_push_exit, height_push_exit))
 
         # Вносим внутрь кнопки сам крестик
-        self.push_exit.setIcon(QIcon('./images/close_icon.svg'))
+        self.push_exit.setIcon(QIcon(close_iconPath))
         self.push_exit.setIconSize(QSize(24, 24))
 
         # Присвоение имени объекта 
@@ -444,7 +477,7 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         self.push_hider.setGeometry(QRect(x_push_hider, y_push_hider, width_push_hider, height_push_hider))
 
         # Вносим внутрь кнопки полоску
-        self.push_hider.setIcon(QIcon('./images/hide_icon.svg'))
+        self.push_hider.setIcon(QIcon(hide_iconPath))
         self.push_hider.setIconSize(QSize(24, 24))
 
         # Присвоение имени объекта 
@@ -921,7 +954,7 @@ class Widget(QWidget, Ui_programm):
 
     def css_update(self):
         # TODO -------------------------------------------------
-        file = QFile("./school_style.css")                             
+        file = QFile(school_style)                             
         file.open(QFile.ReadOnly | QFile.Text)
         stream = QTextStream(file)
         app.setStyleSheet(stream.readAll())
