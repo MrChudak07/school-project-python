@@ -312,7 +312,7 @@ else:
     school_style = os.path.join(os.path.abspath("."), './school_style.css')
 
 # * CSS styles
-config = {"codehilite": {"linenums": "True"}, 'mdx_math': {'enable_dollar_delimiter': True}}
+config = {"codehilite": {"linenums": "True"}}
 style = '<style>'
 with open(base_style, 'r',  encoding= 'utf-8') as f:
     style+= f.read()
@@ -784,14 +784,14 @@ class Widget(QWidget, Ui_programm):
                     
 
         with open(f'./prog_notes/{self.choice_name.text()}/others/{self.choice_name.text()}.html', 'w', encoding='utf-8') as f_html:
-            text_html = markdown.markdown(text,   extensions=["codehilite", "tables", "mdx_math"], extension_configs=config)
+            text_html = markdown.markdown(text,   extensions=["codehilite", "tables"], extension_configs=config)
             f_html.write(text_html)
             # else:
             #     with open(f'./prog_notes/{self.choice_name.text()}/{self.choice_name.text()}.txt', 'w', encoding='utf-8') as f:
             #         text = self.work_area.toPlainText()
             #         f.write(text)
     
-        
+
 
 # TODO ----------------------------------------------------------------------------------
 
@@ -1070,7 +1070,7 @@ class Widget(QWidget, Ui_programm):
                     programm.button_result.setText('редактировать')
                     programm.work_area.hide()
                     
-                    text = markdown.markdown(text,  extensions=["codehilite", "tables", 'mdx_math'], extension_configs=config)
+                    text = markdown.markdown(text,  extensions=["codehilite", "tables"], extension_configs=config)
                     text += style 
                     programm.viewer.setHtml(text)
                     programm.viewer.show()
