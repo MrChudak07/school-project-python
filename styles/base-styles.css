@@ -18,11 +18,18 @@
 
 
 
+
 html {
     color: #C2C2C2;
     background-color: #202224;
+    font-family: "roboto", sans-serif;
+    font-weight: 400;
+    font-size: 22px;
 }
 
+body {
+    word-wrap: break-word;
+}
 
 code{
     font-family: "monospace", sans-serif;

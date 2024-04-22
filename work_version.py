@@ -1,5 +1,5 @@
 # from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
-from PyQt5.QtCore import QRect, Qt, QFile, QTextStream
+from PyQt5.QtCore import QRect, Qt, QFile, QTextStream, pyqtSignal
 from PyQt5.QtGui import QIcon, QCursor
 from PyQt5.QtWidgets import QWidget, QTextEdit, QLineEdit, QLabel, QAction, QMenu, QPushButton, QApplication, QSystemTrayIcon
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -247,42 +247,83 @@ y_button_color = 12
 
 # * Диалоговое окно
 # size 
-width_rename_win = 500
-height_rename_win = 200
+width_rename_win = 520
+height_rename_win = 202
 # locate
-x_rename_win = 650
-y_rename_win = 250
+x_rename_win = 540
+y_rename_win = 352
 
 # * Кнопака потверждения переименования
 # size 
-width_rename_accept = 100
-height_rename_accept = 25
+width_rename_accept = 120
+height_rename_accept = 19
 # locate
-x_rename_accept = 380
+x_rename_accept = 384
 y_rename_accept = 160
 #* Кнопка отмены переименования
 # size
-width_rename_cancel = 100
-height_rename_cancel = 25
+width_rename_cancel = 74
+height_rename_cancel = 19
 # locatee
-x_rename_cancel = 20
+x_rename_cancel = 26
 y_rename_cancel = 160
 
 # * Строка ввода нового имени
 # size 80, 100, 360, 35
-width_rename_line = 360
-height_rename_line = 35
+width_rename_line = 488
+height_rename_line = 43
 # Locate
-x_rename_line = 80
-y_rename_line = 100
+x_rename_line = 16
+y_rename_line = 84
 
 # * Надпись об переименвоании заметки
 # size 
 width_rename_label = 488
-height_rename_label = 50
+height_rename_label = 28
 # locate
-x_rename_label = 20
-y_rename_label = 20
+x_rename_label = 16
+y_rename_label = 24
+
+
+# * Окно потверждения о закртии приложения, border - 4
+# size x =540, y = 390, w = 520, h = 127
+width_confirm_win = 520
+height_confirm_win = 127
+# locate
+x_confirm_win = 540
+y_confirm_win = 390
+
+# * Кнопка отмены закртия
+# size x =16 , y = 84, w = 74, h = 19 
+width_confirm_cancel = 74
+height_confirm_cancel = 19
+# locate
+x_confirm_cancel = 16
+y_confirm_cancel = 84
+
+# * Кнопка закрытия без сохранений
+# size x =206 , y = 84, w = 102, h = 19 
+width_not_save = 102
+height_not_save = 19
+# locate
+x_not_save = 206
+y_not_save = 84
+
+# * Кнопка закрытия с сохранением
+# size x =424 , y = 84, w = 80, h = 19 
+width_confirm_save = 80
+height_confirm_save = 19
+# locate
+x_confirm_save = 424
+y_confirm_save = 84
+
+# * Надпись уведомления окна
+# size x =16 , y = 24, w = 488, h = 28
+width_confirm_label = 488
+height_confirm_label = 28
+# locate
+x_confirm_label = 16
+y_confirm_label = 24
 
 
 if hasattr(sys, '_MEIPASS'):
@@ -404,6 +445,7 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         # self.viewer = QtWidgets.QLabel()
         self.viewer.setGeometry(x_work_area, y_work_area, width_work_area, height_work_area)
         self.viewer.setObjectName('work_area')
+        
         self.viewer.hide()
         # self.work_area.verticalScrollBar()
         # self.scrol = QtWidgets.QScrollBar(self.content_area)
@@ -441,7 +483,7 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         self.add_note.setGeometry(QRect(x_add_note, y_add_note, width_add_note, height_add_note))
 
         # Настройка текста
-        self.add_note.setIcon(QIcon(add_iconPath))
+        # self.add_note.setIcon(QIcon(add_iconPath))
         self.add_note.setIconSize(QSize(24, 24))
 
         # присвоение имени объекта
@@ -545,17 +587,29 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         self.context_menu = QMenu(self.main)
         self.context_menu.setObjectName('context_menu')
         
-        self.context_rename = self.context_menu.addAction('переименовать')
-        self.context_rename.setObjectName('buttons_action')
-        self.context_rename.triggered.connect(self.action_rename_click)
+        # self.context_rename = self.context_menu.addAction('переименовать')
+        # self.context_rename.setObjectName('buttons_action')
+        # self.context_rename.triggered.connect(self.action_rename_click)
+
+        # self.context_save = self.context_menu.addAction('сохранить')
+        # self.context_save.setObjectName('buttons_action')
+        # self.context_save.triggered.connect(self.action_save_click)
+
+        # self.context_close = self.context_menu.addAction('закрыть')
+        # self.context_close.setObjectName('buttons_action')
+        # self.context_close.triggered.connect(self.action_close_click)
 
         self.context_save = self.context_menu.addAction('сохранить')
         self.context_save.setObjectName('buttons_action')
         self.context_save.triggered.connect(self.action_save_click)
 
-        self.context_close = self.context_menu.addAction('закрыть')
-        self.context_close.setObjectName('buttons_action')
-        self.context_close.triggered.connect(self.action_close_click)
+        self.context_rename = self.context_menu.addAction('переименовать')
+        self.context_rename.setObjectName('buttons_action')
+        self.context_rename.triggered.connect(self.action_rename_click)
+
+        self.context_delete = self.context_menu.addAction('удалить')
+        self.context_delete.setObjectName('buttons_action')
+        self.context_delete.triggered.connect(self.action_delete_click)
 
         # * Окно смены имеи заметки
         self.rename_win = QWidget(note_win)
@@ -590,8 +644,40 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
 
         self.background_rename = QWidget(self.main)
         self.background_rename.setGeometry(QRect(x_win, y_win, WIDTH, HEIGHT))
-        self.background_rename.setStyleSheet("""background-color: rgba(0,0,0, 0.5);""")
+        self.background_rename.setStyleSheet("""background-color: rgba(16,18,20, 0.8);""")
         self.background_rename.hide()
+
+
+        # * confirm close
+        self.confirm_win = QWidget(note_win)
+        self.confirm_win.setGeometry(QRect(x_confirm_win, y_confirm_win, width_confirm_win, height_confirm_win))
+        self.confirm_win.setObjectName('confirm_win')
+        self.confirm_win.hide()
+
+        self.confirm_cancel = QPushButton(self.confirm_win)
+        self.confirm_cancel.setGeometry(QRect(x_confirm_cancel, y_confirm_cancel, width_confirm_cancel, height_confirm_cancel))
+        self.confirm_cancel.setText('Отменить')
+        self.confirm_cancel.setObjectName('confirm_button')
+
+        self.not_save = QPushButton(self.confirm_win)
+        self.not_save.setGeometry(QRect(x_not_save, y_not_save, width_not_save, height_not_save))
+        self.not_save.setText('Не сохранять')
+        self.not_save.setObjectName('confirm_button')
+
+        self.confirm_save = QPushButton(self.confirm_win)
+        self.confirm_save.setGeometry(QRect(x_confirm_save, y_confirm_save, width_confirm_save, height_confirm_save))
+        self.confirm_save.setText('Сохранить')
+        self.confirm_save.setObjectName('confirm_button')
+
+        self.confirm_label = QLabel(self.confirm_win)
+        self.confirm_label.setGeometry(QRect(x_confirm_label, y_confirm_label, width_confirm_label, height_confirm_label))
+        self.confirm_label.setText('Хотите сохранить ваши изменения?')
+        self.confirm_label.setObjectName('confirm_label')
+
+        self.background_close = QWidget(self.main)
+        self.background_close.setGeometry(QRect(x_win, y_win, WIDTH, HEIGHT))
+        self.background_close.setStyleSheet("""background-color: rgba(16,18,20, 0.8);""")
+        self.background_close.hide()
 
 
 
@@ -611,7 +697,7 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
                 #     name.hide()
                 #     l_notes[i].setGeometry(12, l_notes[i-1].y() + l_notes[i-1].geometry().height(),  302, 31)
                 # else:
-            l_notes[i].setText(f'Unnamed-{i}')
+            l_notes[i].setText(f'Без имени-{i}')
             # name.hide()
             l_notes[i].setGeometry(12, l_notes[i-1].y() + l_notes[i-1].geometry().height(),  302, 31)
            
@@ -626,7 +712,7 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
                 # else:
 
                     # l_notes[0].setGeometry(12, 0, 302, 31)
-            l_notes[0].setText(f'Unnamed-{0}')
+            l_notes[0].setText(f'Без имени')
 
         for i in l_notes:
             i.show()
@@ -639,6 +725,8 @@ class Ui_programm(object): # Может быть вариант с class Ui_prog
         gpu_notes[name]['is_changed'] = False
        
         programm.save_newNote()
+
+        
         
         # self.add_note.raise_()
         
@@ -657,7 +745,7 @@ class Widget(QWidget, Ui_programm):
         self.check_menu = False
 
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.click_count = 0
+        # self.click_count = 0
 
     def mousePressEvent(self, event):
         # Если нажата левая кнопка мыши
@@ -712,11 +800,13 @@ class Widget(QWidget, Ui_programm):
 
 # ! ---------------------------------------------------------
     def contextMenuEvent(self, event):
+        
         if len(l_notes) > 0:
             for button in l_notes:
                 if ((event.pos().x() >  button.geometry().x() and event.pos().x() < button.geometry().width()) and
                 (event.pos().y() >  button.geometry().y() + 162 and event.pos().y()  < (button.geometry().y() + button.geometry().height() + 162))):
                     self.context_menu.exec_(self.mapToGlobal(event.pos()))
+                    
                     break
     
     def action_rename_click(self):
@@ -726,8 +816,8 @@ class Widget(QWidget, Ui_programm):
         # self.rename_win.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         # self.rename_line = QtWidgets.QLineEdit()
         
-        self.rename_win.show()
         self.background_rename.show()
+        self.rename_win.show()
         
 
 
@@ -746,7 +836,7 @@ class Widget(QWidget, Ui_programm):
             os.rename(f'./prog_notes/{old_name}', f'./prog_notes/{new_name}' )
             os.rename(f'./prog_notes/{new_name}/{old_name}.txt', f'./prog_notes/{new_name}/{new_name}.txt' )
             os.rename(f'./prog_notes/{new_name}/others/{old_name}.html', f'./prog_notes/{new_name}/others/{new_name}.html' )
-
+            self.rename_line.setText('')
             self.rename_win.close()
             self.background_rename.close()
         else: 
@@ -795,7 +885,7 @@ class Widget(QWidget, Ui_programm):
 
 # TODO ----------------------------------------------------------------------------------
 
-    def action_close_click(self):
+    def action_delete_click(self):
         return None
         name = self.choice_name.text()
         self.choice_name.setText('')
@@ -813,7 +903,37 @@ class Widget(QWidget, Ui_programm):
 
     # Функция для закрытия приложения
     def close_app(self):
+        for note in gpu_notes:
+            if gpu_notes[note]['is_changed']:
+                self.background_close.show()
+                self.confirm_win.show()
+                
+                break
+
+        else: self.close()
+
+    
+    def close_without_change(self):
         self.close()
+    
+
+
+    def cancel_close(self):
+        self.background_close.hide()
+        self.confirm_win.hide()
+       
+
+
+    def close_with_change(self):
+        for note in gpu_notes:
+            if gpu_notes[note]['is_changed']:
+                
+                with open(f'./prog_notes/{note}/{note}.txt', 'w', encoding='utf-8') as f:
+                    f.write(gpu_notes[note]['text'])
+                    f.close()
+                
+        self.close()
+
 
     # Функция для сворачивания приложения
     def hide_app(self):
@@ -895,7 +1015,7 @@ class Widget(QWidget, Ui_programm):
 
                 name = self.pressed.text()
                 gpu_notes[name] = {}
-                gpu_notes[name]['text'] = ''
+                gpu_notes[name]['text'] = self.work_area.toPlainText()
                 gpu_notes[name]['is_changed'] = False
                 gpu_notes[name]['is_selected'] = True
 
@@ -943,7 +1063,14 @@ class Widget(QWidget, Ui_programm):
                 self.pressed.setObjectName('choiced_note')
             self.css_update()
             self.init_conffg_signals()
-            self.click_count += 1
+            # self.click_count += 1
+
+            if self.button_result.text() == 'редактировать':
+                programm.work_area.hide()
+                text = markdown.markdown(programm.work_area.toPlainText(),  extensions=["codehilite", "tables"], extension_configs=config)
+                text += style 
+                programm.viewer.setHtml(text)
+                programm.viewer.show()
          
             return None
          
@@ -987,6 +1114,13 @@ class Widget(QWidget, Ui_programm):
             for i in l_notes:
                 i.show()
                 i.clicked.connect(programm.click_note)
+            
+            for note in notes:
+                gpu_notes[note] = {}
+                gpu_notes[note]['text'] = ''
+                gpu_notes[note]['is_changed'] = False
+                gpu_notes[note]['is_selected'] = False  
+            
 
         # self.init_conffg_signals()
 
@@ -1147,6 +1281,10 @@ if __name__ == "__main__":
     programm.button_result.clicked.connect(programm.show_result)
     programm.rename_accept.clicked.connect(programm.accept_rename)
     programm.rename_cancel.clicked.connect(programm.cancel_rename)
+
+    programm.confirm_cancel.clicked.connect(programm.cancel_close)
+    programm.not_save.clicked.connect(programm.close_without_change)
+    programm.confirm_save.clicked.connect(programm.close_with_change)
     
     
     programm.css_update()
